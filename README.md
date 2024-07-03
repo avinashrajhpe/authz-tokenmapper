@@ -1,7 +1,7 @@
-# Keycloak OIDC protocol token mapper
+# Authz protocol token mapper
 
-This is an example token mapper for Keycloak using the OIDC protocol.
+This is Authz token mapper for Keycloak using the OIDC protocol.
 
-You can configure the mapper with an upper and a lower bound and it will generate a random authz token (integer) and maps it into the specified token(s) (and userinfo endpoint) to the specified claim.
+The mapper is built as jar files and then loaded in the keycloak.
 
-![](./config.png)
+Then the mapper connects with the authz to get the permissions and updates the claims before passing it to the user.
