@@ -1,0 +1,163 @@
+// (C) Copyright 2022-2024 Hewlett Packard Enterprise Development LP
+
+syntax = "proto3";
+
+package authz.v2;
+
+import "validate/validate.proto";
+
+message EnforceRequest {
+	// The slug or short name identifying the permission to enforce
+	string permission = 1;
+
+	// The slug or short name identifying the resource to enforce
+	string application_resource = 2;
+
+	// The slug or short name of the list of groups against which to test enforcement
+	repeated string groups = 3;
+}
+
+message UserEnforceRequest {
+	// The user_id (typically an email address)
+	string user_id = 1 [(validate.rules).string = {min_len: 1}];
+
+	// The customer application id
+	string app_cid = 2 [(validate.rules).string = {min_len: 1}];
+
+	// The slug or short name identifying the permission to enforce
+	string permission = 3 [(validate.rules).string = {min_len: 1}];
+
+	// The slug or short name of the list of groups against which to test enforcement
+	repeated string groups = 4;
+}
+
+message EnforceAllRequest {
+	// The slug or short name identifying the permission to enforce
+	string permission = 1;
+
+	// The slug or short name identifying the resource to enforce
+	string application_resource = 2;
+
+	// The slug or short name of the list of groups against which to test enforcement
+	repeated string groups = 3;
+}
+
+// Result of Resource Access
+enum EnforceEffect {
+	ENFORCE_EFFECT_UNSPECIFIED = 0;
+	ENFORCE_EFFECT_ALLOW = 1;
+	ENFORCE_EFFECT_DENY = 2;
+}
+
+// Result of Resource Access
+message EnforceResponse {
+	EnforceEffect result = 1;
+}
+
+// Result of Resource Access
+message EnforceAllResponse {
+	EnforceEffect result = 1;
+}
+
+// Result of Resource Access
+message UserEnforceResponse {
+	EnforceEffect result = 1;
+}
+
+message ResourceSpec {
+	// The application Resource
+	string application_resource = 1;
+
+	// list of permissions
+	repeated string permissions = 2;
+
+	// optional list of scope resources
+	repeated string groups = 3;
+}
+
+message ServiceEnforceRequest {
+	// The ID of the implicit permissions to enforce
+	string implicit_permissions_id = 1;
+
+	// The string representing the Namespace of a calling service
+	string namespace = 2;
+
+	// The string representing the ServiceAccount of a calling service
+	string service_account = 3;
+}
+
+// Result of Resource Access
+message ServiceEnforceResponse {
+	EnforceEffect result = 1;
+}
+
+message UserAccessibleResourcesRequest {
+	// Optional Filter to limit the returned results
+	repeated ResourceSpec filter = 1;
+}
+
+message UserPermissionsRequest {
+	// The user_id (typically an email address)
+	string user_id = 1 [(validate.rules).string = {min_len: 1}];
+
+	// The customer application id
+	string app_cid = 2 [(validate.rules).string = {min_len: 1}];
+
+	// The application Resource
+	ResourceSpec filter = 3;
+}
+
+message UserPermissionsResponse {
+	repeated ResourceUserPermission resource_permissions = 1;
+}
+
+message ResourceUserPermission {
+	// Resource Spec
+	ResourceSpec resource = 1;
+
+	// Permission Access Result
+	EnforceResponse effect = 2;
+}
+
+message UserAccessibleResourcesResponse {
+	repeated ResourceUserPermission resource_permissions = 1;
+}
+
+message GetRBACDomainRequest {}
+
+message GetRBACDomainResponse {
+	// RBAC domain name (e.g. data-services, ring-of-power)
+	string rbac_domain = 1;
+}
+
+// Authz service - v2
+// All RPC calls are expected to come with a header containing the
+// user Access Token.
+
+service AuthorizationService {
+	// Enforce permissions on a resource based on any group association
+	rpc Enforce(EnforceRequest) returns (EnforceResponse) {}
+
+	rpc EnforceAll(EnforceAllRequest) returns (EnforceAllResponse) {}
+
+	// Get list of Accessible Resources
+	rpc UserAccessibleResources(UserAccessibleResourcesRequest) returns (UserAccessibleResourcesResponse) {}
+
+	// Services that are deployed into multiple domains can use this function to retrieve the domain name
+	rpc GetRBACDomain(GetRBACDomainRequest) returns (GetRBACDomainResponse) {}
+
+	// A special enforce function to be used by services when a user's permissions need to be checked without access to the user's token.
+	// The service must be explicitly authorized to call this function - see Authz API documentation for more details."
+	rpc UserEnforce(UserEnforceRequest) returns (UserEnforceResponse) {}
+
+	// A special UAR function to be used by services to retrieve permissions for a specific user/customer without access to user's token.
+	// The service must be explicitly authorized to call this function - see Authz API documentation for more details."
+	rpc UserPermissions(UserPermissionsRequest) returns (UserPermissionsResponse) {}
+}
+
+// Authz inter service authorization service - v2
+
+service InterServiceAuthorizationService {
+	// ServiceEnforce determines if specified service is in the allowed services list for an implicit permission
+	rpc ServiceEnforce(ServiceEnforceRequest) returns (ServiceEnforceResponse) {}
+}

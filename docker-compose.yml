@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  cds-dev:
+    hostname: cds-dev
+    image: ghcr.io/hpe-cds/containers-images/cds-dev:latest
+    privileged: true
+    environment:
+      - HTTP_PROXY
+      - http_proxy
+      - HTTPS_PROXY
+      - https_proxy
+      - NO_PROXY
+      - no_proxy
+    working_dir: /home/dev/ws/keycloak-authz-tokenmapper
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $HOME/.kube/config:/home/dev/.kube/config
+      - $HOME/.gitconfig:/home/dev/.gitconfig
+      - $HOME/.ssh:/home/dev/.ssh
+      - .:/home/dev/ws/keycloak-authz-tokenmapper
+    ports:
+      - "22"
+      - "5000-5005"
+      - "3000"
+      - "8089" # To access locust for performance testing from docker
+      - "8080" # To access rest server from docker
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - echo hello
+      interval: 30s
+      timeout: 5s
+      retries: 3

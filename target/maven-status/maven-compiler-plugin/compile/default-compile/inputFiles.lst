@@ -1,0 +1,9 @@
+/home/dev/ws/keycloak-authz-tokenmapper/target/generated-sources/protobuf/grpc-java/authz/v2/InterServiceAuthorizationServiceGrpc.java
+/home/dev/ws/keycloak-authz-tokenmapper/src/main/java/sc/authz/grpc/AuthorizationServiceImpl.java
+/home/dev/ws/keycloak-authz-tokenmapper/src/main/java/sc/authz/grpc/AuthenticationCallCredentials.java
+/home/dev/ws/keycloak-authz-tokenmapper/target/generated-sources/protobuf/java/io/envoyproxy/pgv/validate/Validate.java
+/home/dev/ws/keycloak-authz-tokenmapper/target/generated-sources/protobuf/java/authz/v2/Authz.java
+/home/dev/ws/keycloak-authz-tokenmapper/src/main/java/sc/authz/grpc/Constants.java
+/home/dev/ws/keycloak-authz-tokenmapper/target/generated-sources/protobuf/grpc-java/authz/v2/AuthorizationServiceGrpc.java
+/home/dev/ws/keycloak-authz-tokenmapper/src/main/java/sc/authz/grpc/AuthorizationClientV2.java
+/home/dev/ws/keycloak-authz-tokenmapper/src/main/java/sc/keycloak/tokenmapper/AuthzTokenMapper.java
