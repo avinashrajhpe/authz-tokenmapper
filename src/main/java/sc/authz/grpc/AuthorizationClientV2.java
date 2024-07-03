@@ -26,24 +26,27 @@ public class AuthorizationClientV2 {
   }
 
   public Map<String, Object> getAuthorizations() {
-		Authz.UserAccessibleResourcesRequest request = Authz.UserAccessibleResourcesRequest.newBuilder()
-			.addFilter(Authz.ResourceSpec.newBuilder()
-				.addGroups("nre-test-group").build())
+		Authz.UserPermissionsRequest request = Authz.UserPermissionsRequest.newBuilder()
+			.setUserId("test-user-id")
+			.setAppCid("test-app-cid")
+			.setFilter(Authz.ResourceSpec.newBuilder()
+				.addGroups("test-group").build())
         .build();
     LOGGER.info("client sending {}", request);
 		String value = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MzM5MjY3MDgsImlzcyI6Imh0dHBzOi8vZGV2LXNzby5jY3MuYXJ1" +
 			"YmF0aGVuYS5jb20iLCJzdWIiOiJqb2UuYmxvZ2dzQGdvb2dsZS5jb20iLCJ1c2V" +
 			"yX2N0eCI6IjU0MzE2Mzk2ZTNmMDExZWJhMjZhYmUwMzkwMzk2MWYwIn0.RKVMEHRuNwUwWdm3Qht24-xVqB-1F6qikJTGmIDXvXM";
 
-    Authz.UserAccessibleResourcesResponse result =
+    Authz.UserPermissionsResponse result =
         authzServiceBlockingStub
 					.withCallCredentials(new AuthenticationCallCredentials(value))
-					.userAccessibleResources(request);
+					.userPermissions(request);
 
     LOGGER.info("client received {}", result);
 		Map<String, Object> claims = new HashMap<>();
-		for (Authz.ResourceUserPermission permissions : result.getResourcePermissionsList()) {
-			claims.put(permissions.getResource().getApplicationResource(), permissions.getResource().getPermissions(0));
+		for (Authz.ResourceUserPermission userPermission : result.getResourcePermissionsList()) {
+			claims.put(userPermission.getResource().getApplicationResource(),
+				userPermission.getResource().getPermissionsList());
 		}
     return claims;
   }

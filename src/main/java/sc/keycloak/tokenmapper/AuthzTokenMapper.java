@@ -1,5 +1,7 @@
 package sc.keycloak.tokenmapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.keycloak.models.ClientSessionContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
@@ -64,7 +66,16 @@ public class AuthzTokenMapper extends AbstractOIDCProtocolMapper
 		// Get the authorization from the Authz gRPC endpoint
 		// Set to test authorization
 		// Get the value and update the token
+		try {
+			System.out.printf("IDToken: %s\n", new ObjectMapper().writeValueAsString(token));
+			//System.out.printf("ProtocolMapperModel: %s\n", new ObjectMapper().writeValueAsString(mappingModel));
+			System.out.printf("UserSessionModel: %s\n", new ObjectMapper().writeValueAsString(userSession));
+			//System.out.printf("KeycloakSession: %s\n", new ObjectMapper().writeValueAsString(keycloakSession));
+			//System.out.printf("ClientSessionContext: %s\n", new ObjectMapper().writeValueAsString(clientSessionCtx));
 
+		} catch (JsonProcessingException e) {
+			System.out.println("Skipping...");
+		}
 		Map<String, Object> authzReturnedPermissions = authorizationClientV2.getAuthorizations();
 		System.out.println("Checking the Authz Endpoint to get the authorization.. Returned := " + authzReturnedPermissions);
 
